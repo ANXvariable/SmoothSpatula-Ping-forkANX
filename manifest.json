@@ -1,0 +1,11 @@
+{
+	"name": "Ping",
+	"version_number": "1.0.0",
+	"website_url": "https://github.com/SmoothSpatula/SmoothSpatula-Ping",
+	"description": "Adds a ping.",
+	"dependencies": [
+		"ReturnOfModding-ReturnOfModding-1.0.29",
+		"Klehrik-HelperFunctions-1.0.5",
+		"SmoothSpatula-TomlHelper-1.0.1"
+	]
+}
