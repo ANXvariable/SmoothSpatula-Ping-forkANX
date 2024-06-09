@@ -36,7 +36,7 @@ gui.add_to_menu_bar(function()
 end)
 
 gui.add_always_draw_imgui(function()
-    if ImGui.IsKeyPressed(params['ping_key']) and not chat_open then
+    if ImGui.IsKeyPressed(ImGuiKey[params['ping_key']]) and not chat_open then
         pinged = true
     end
 end)
