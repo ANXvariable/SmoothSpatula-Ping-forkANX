@@ -41,6 +41,12 @@ gui.add_always_draw_imgui(function()
     end
 end)
 
+-- ========== Utils ==========
+
+function add_chat_message(actor, text)
+    gm.chat_add_user_message(actor, text)
+end
+
 -- ========== Main ==========
 
 gm.pre_code_execute(function(self, other, code, result, flags)
@@ -65,7 +71,7 @@ gm.pre_code_execute(function(self, other, code, result, flags)
             
             self.offscreen_object_indicators[#self.offscreen_object_indicators+1] = object_ind
 
-            Helper.add_chat_message(player, "has pinged the item "..item.text1)
+            add_chat_message(player, "has pinged the item "..item.text1)
             player:net_send_instance_message(4, "has pinged the item "..item.text1)
         end
         
