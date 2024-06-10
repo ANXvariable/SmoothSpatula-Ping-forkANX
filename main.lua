@@ -2,7 +2,7 @@ log.info("Successfully loaded ".._ENV["!guid"]..".")
 mods.on_all_mods_loaded(function() for k, v in pairs(mods) do if type(v) == "table" and v.hfuncs then Helper = v end end end)
 mods.on_all_mods_loaded(function() for k, v in pairs(mods) do if type(v) == "table" and v.tomlfuncs then Toml = v end end 
     params = {
-        ping_key = "F",
+        ping_key = 551,
         ping_enabled = true
     }
 
@@ -143,7 +143,7 @@ gm.pre_code_execute(function(self, other, code, result, flags)
             if not object_ind then return end
 
             self.offscreen_object_indicators[#self.offscreen_object_indicators+1] = object_ind
-        end
+        end 
     end
 end)
 
