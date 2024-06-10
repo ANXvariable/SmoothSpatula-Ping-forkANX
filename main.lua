@@ -48,7 +48,7 @@ gui.add_to_menu_bar(function()
 end)
 
 gui.add_always_draw_imgui(function()
-    if ImGui.IsKeyPressed(ImGuiKey[params['ping_key']]) and not chat_open then
+    if ImGui.IsKeyPressed(params['ping_key']) and not chat_open then
         pinged = true
     end
 end)
@@ -144,12 +144,10 @@ gm.pre_code_execute(function(self, other, code, result, flags)
 
             self.offscreen_object_indicators[#self.offscreen_object_indicators+1] = object_ind
         end
-        
     end
 end)
 
 function findItem(actor, item_name)
-    print(actor.user_name)
     if not actor then return end
 
     local item_list = gm.ds_list_create()
