@@ -68,6 +68,8 @@ end
 
 gm.pre_code_execute(function(self, other, code, result, flags)
     if code.name:match("oInit") then
+        chat_open = self.chat_talking
+
         local message_list_size = gm.ds_list_size(self.chat_messages) 
         if message_list_size <= 0 or message_list_size == previous_size then return end
 
@@ -110,7 +112,6 @@ gm.pre_code_execute(function(self, other, code, result, flags)
         
         if pinged then
             pinged = false
-            
             
             local item = findItem(player)
             if not item then return end
@@ -163,8 +164,6 @@ function findItem(actor, item_name)
         local item = gm.ds_list_find_value(item_list, i)
         if item.text1 == item_name then return item end
     end
-
-    return
 end
 
 function pingItem(self, item)
@@ -175,16 +174,9 @@ function pingItem(self, item)
     end
 
     local indicator = gm.struct_create()
-
     indicator.sprite = item.sprite_index
     indicator.col = 12632256
     indicator.inst = item
 
     return indicator
 end
-
-gm.pre_code_execute(function(self, other, code, result, flags)
-    if code.name:match("oInit") then
-        chat_open = self.chat_talking
-    end
-end)
