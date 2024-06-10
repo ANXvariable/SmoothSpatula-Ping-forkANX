@@ -11,11 +11,23 @@ end)
 
 local pinged = false
 local chatPing = false
+local actor_item = nil
 local item_name_id = nil
-local otype = nil
-local item_match_string = 'has%spinged%sthe%sitem%s'
-local radius = 300
+local item_match_string = '.-has%spinged%s<%a+>(.-)</c>(%d)%.0$'
+local radius = 250
 local chat_open = false
+local previous_size = 0
+
+local rarities = {
+    '<w>',
+    '<g>',
+    '<r>',
+    '<or>',
+    '<y>',
+    '<p>',
+    '<or>',
+    '<w>'
+}
 
 -- ========== ImGui ==========
 
@@ -28,9 +40,9 @@ gui.add_to_menu_bar(function()
 end)
 
 gui.add_to_menu_bar(function()
-    local new_value, isChanged = ImGui.InputText("Ping Key", params['ping_key'], 20)
+    local isChanged, keybind_value = ImGui.Hotkey("Ping Key", params['ping_key'])
     if isChanged then
-        params['ping_key'] = new_value
+        params['ping_key'] = keybind_value
         Toml.save_cfg(_ENV["!guid"], params)
     end
 end)
@@ -41,7 +53,52 @@ gui.add_always_draw_imgui(function()
     end
 end)
 
+-- ========== Utils ==========
+
+function find_player(m_id)
+    local players = Helper.find_active_instance_all(gm.constants.oP)
+    for _, p in ipairs(players) do
+        if p.m_id == m_id then
+            return p
+        end
+    end
+end
+
 -- ========== Main ==========
+
+gm.pre_code_execute(function(self, other, code, result, flags)
+    if code.name:match("oInit") then
+        local message_list_size = gm.ds_list_size(self.chat_messages) 
+        if message_list_size <= 0 or message_list_size == previous_size then return end
+
+        previous_size = message_list_size
+        
+        local message = gm.ds_list_find_value(self.chat_messages, 0)
+        if not message then return end
+        
+        local item_name, m_id = message.text:match(item_match_string)
+        if not item_name then return end
+        
+        local player = Helper.get_client_player()
+        if not player then return end
+
+        actor_item = find_player(tonumber(m_id))
+        
+        item_name_id = item_name
+        
+        gm.ds_list_delete(self.chat_messages, 0)
+        previous_size = message_list_size-1
+
+        if player.m_id == 1 then
+            local system_message = message.text:sub(1, -4)
+            gm.chat_add_system_message(0, system_message)
+        end
+
+        chatPing = true
+    end
+
+end)
+
 
 gm.pre_code_execute(function(self, other, code, result, flags)
     if not params['ping_enabled'] then return end
@@ -58,72 +115,43 @@ gm.pre_code_execute(function(self, other, code, result, flags)
             local item = findItem(player)
             if not item then return end
 
-            print(item.text1)
-
             local object_ind = pingItem(self, item)
             if not object_ind then return end
             
             self.offscreen_object_indicators[#self.offscreen_object_indicators+1] = object_ind
 
-            gm.chat_add_user_message(player, "has pinged the item "..item.text1)
-            player:net_send_instance_message(4, "has pinged the item "..item.text1)
+            local message = player.user_name.." has pinged <w>"..item.text1.."</c>"
+
+            if item.tier then 
+                message = player.user_name.." has pinged "..rarities[item.tier+1]..item.text1.."</c>"
+            end
+
+            if player.m_id == 1 then 
+                gm.chat_add_system_message(0, message)
+            end
+
+            player:net_send_instance_message(4, message..player.m_id)
         end
         
         if chatPing then
             chatPing = false
             
-            local item = findItem(player, item_name_id)
+            local item = findItem(actor_item, item_name_id)
             if not item then return end
-
-            print(item.text1)
-
+            
             local object_ind = pingItem(self, item)
             if not object_ind then return end
 
-            
             self.offscreen_object_indicators[#self.offscreen_object_indicators+1] = object_ind
         end
         
     end
 end)
 
-gm.pre_script_hook(gm.constants.chat_add_user_message, function(self, other, result, args)
-    local actor = args[1].value
-    local message = args[2].value
-
-    local player = Helper.get_client_player()
-    if not player or actor.m_id == player.m_id then return end
-
-    local match_str = message:match(item_match_string)
-    if match_str then return end
-
-    item_name_id = message:gsub(item_match_string, '')
-
-    if not item_name_id then return end
-
-    chatPing = true
-end)
-
--- gm.pre_script_hook(gm.constants.__input_system_tick, function(self, other, result, args)
---     -- Scan the 15 most recent chat messages and check if they have net_send ids
---     local oInit = Helper.find_active_instance(gm.constants.oInit)
---     if oInit and gm.ds_list_size(oInit.chat_messages) > 0 then
---         for n = math.min(gm.ds_list_size(oInit.chat_messages) - 1, 15), 0, -1 do
---             local message = gm.ds_list_find_value(oInit.chat_messages, n)
---             print(message.text)
-
---             local match_str = message.text:match('%shas%spinged')
-
---             if not match_str then return end
-
---             print(message.text)
-
-            
---         end
---     end
--- end)
-
 function findItem(actor, item_name)
+    print(actor.user_name)
+    if not actor then return end
+
     local item_list = gm.ds_list_create()
     gm.ds_list_clear(item_list)
 
