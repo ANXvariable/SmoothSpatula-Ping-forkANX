@@ -117,6 +117,7 @@ gm.pre_code_execute(function(self, other, code, result, flags)
         local player = Helper.get_client_player()
         if not player then return end
         
+        -- Self ping
         if pinged then
             pinged = false
             
@@ -141,6 +142,7 @@ gm.pre_code_execute(function(self, other, code, result, flags)
             player:net_send_instance_message(4, message..player.m_id)
         end
         
+        -- Others ping
         if chatPing then
             chatPing = false
             
