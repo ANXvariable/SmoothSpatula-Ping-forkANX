@@ -11,10 +11,17 @@ end)
 
 local pinged = false
 local chatPing = false
+
+-- Regex used to match the players message
+local item_match_string = '.-has%spinged%s<%a+>(.-)</c>(%d)%.0$'
+
+-- Actor and item name used for the ping
 local actor_item = nil
 local item_name_id = nil
-local item_match_string = '.-has%spinged%s<%a+>(.-)</c>(%d)%.0$'
+
+-- Ping radius
 local radius = 250
+
 local chat_open = false
 local previous_size = 0
 
