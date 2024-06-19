@@ -1,4 +1,4 @@
--- Ping v1.0.0
+-- Ping v1.0.1
 -- SmoothSpatula
 
 log.info("Successfully loaded ".._ENV["!guid"]..".")
@@ -113,7 +113,7 @@ end)
 
 
 gm.pre_code_execute(function(self, other, code, result, flags)
-    if not params['ping_enabled'] then return end
+    if not gm.variable_global_get("__run_exists") or not params['ping_enabled'] then return end
     
     if code.name:match("oHUD_Draw") then
         
@@ -189,6 +189,8 @@ function pingItem(self, item)
     indicator.sprite = item.sprite_index
     indicator.col = 12632256
     indicator.inst = item
+
+    gm.instance_create_depth(item.x, item.y, 0, gm.constants.oEfLightningRing) -- visual feedback for pinging an item
 
     return indicator
 end
