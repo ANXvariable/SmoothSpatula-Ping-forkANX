@@ -17,6 +17,7 @@ local chatPing = false
 
 -- Regex used to match the players message
 local item_match_string = '.-has%spinged%s<%a+>(.-)</c>(%d)%.0$'
+local item_match_string_2 = '.-has%spinged%s<%a+>(.-)</c>(%d)%,0$'
 
 -- Actor and item name used for the ping
 local actor_item = nil
@@ -89,6 +90,10 @@ gm.pre_code_execute(function(self, other, code, result, flags)
         if not message then return end
         
         local item_name, m_id = message.text:match(item_match_string)
+        if not item_name then
+            local item_name, m_id = message.text:match(item_match_string_2)
+        end
+
         if not item_name then return end
         
         local player = Helper.get_client_player()
@@ -130,7 +135,7 @@ gm.pre_code_execute(function(self, other, code, result, flags)
             local object_ind = pingItem(self, item)
             if not object_ind then return end
             
-            self.offscreen_object_indicators[#self.offscreen_object_indicators+1] = object_ind
+            gm.array_set(self.offscreen_object_indicators, #self.offscreen_object_indicators, object_ind)
 
             local message = player.user_name.." has pinged <w>"..item.text1.."</c>"
 
@@ -154,8 +159,7 @@ gm.pre_code_execute(function(self, other, code, result, flags)
             
             local object_ind = pingItem(self, item)
             if not object_ind then return end
-
-            self.offscreen_object_indicators[#self.offscreen_object_indicators+1] = object_ind
+            gm.array_set(self.offscreen_object_indicators, #self.offscreen_object_indicators, object_ind)
         end 
     end
 end)
