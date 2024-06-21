@@ -1,4 +1,4 @@
--- Ping v1.0.1
+-- Ping v1.0.2
 -- SmoothSpatula
 
 log.info("Successfully loaded ".._ENV["!guid"]..".")
@@ -130,7 +130,7 @@ gm.pre_code_execute(function(self, other, code, result, flags)
             local object_ind = pingItem(self, item)
             if not object_ind then return end
             
-            self.offscreen_object_indicators[#self.offscreen_object_indicators+1] = object_ind
+            gm.array_push(self.offscreen_object_indicators, object_ind)
 
             local message = player.user_name.." has pinged <w>"..item.text1.."</c>"
 
@@ -155,7 +155,7 @@ gm.pre_code_execute(function(self, other, code, result, flags)
             local object_ind = pingItem(self, item)
             if not object_ind then return end
 
-            self.offscreen_object_indicators[#self.offscreen_object_indicators+1] = object_ind
+            gm.array_push(self.offscreen_object_indicators, object_ind)
         end 
     end
 end)
@@ -190,7 +190,8 @@ function pingItem(self, item)
     indicator.col = 12632256
     indicator.inst = item
 
-    gm.instance_create_depth(item.x, item.y, 0, gm.constants.oEfLightningRing) -- visual feedback for pinging an item
+    local effect = gm.instance_create_depth(item.x, item.y, 0, gm.constants.oEfLightningRing) -- visual feedback for pinging an item
+    effect.damage = 0.0
 
     return indicator
 end
