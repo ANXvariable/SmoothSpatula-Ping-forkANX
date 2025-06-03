@@ -7,3 +7,6 @@
 
 ### v1.0.2
 * Fixed array setting
+
+### v1.0.3
+* Changed dependency from HelperFunctions to RoRR Modding Toolkit
