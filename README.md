@@ -1,4 +1,4 @@
-# SmoothSpatula-Ping
+# Ping
 Adds a ping functionnality. Press F facing an item to ping it.
 
 ---
@@ -11,6 +11,9 @@ Adds a ping functionnality. Press F facing an item to ping it.
 ## Usage
 * Open the ImGUI window display (default key is `Insert`)
 * [List of possible keys for the toggle](https://oprypin.github.io/crystal-imgui/ImGui/ImGuiKey.html)
+
+## Credit
+* SmoothSpatula - Everything
 
 ## Special Thanks To
 * The Return Of Modding team
